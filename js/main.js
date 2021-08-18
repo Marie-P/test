@@ -21,6 +21,14 @@ class Main {
       window.addEventListener("touchend", event => this.controller.touchendFunction(event));
     }
 
+    document.addEventListener("copy", function(evt){
+      // Change the copied text if you want
+      evt.clipboardData.setData("text/plain", "Copying is not allowed on this webpage");
+     
+      // Prevent the default copy action
+      evt.preventDefault();
+    }, false);
+
     // this.controller.mainMenu();
     this.controller.load(); 
   }
