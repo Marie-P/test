@@ -19,17 +19,15 @@ class Main {
       window.addEventListener("touchstart", event => this.controller.touchstartFunction(event));
       window.addEventListener("touchmove", event => this.controller.touchmoveFunction(event));
       window.addEventListener("touchend", event => this.controller.touchendFunction(event));
-    }
 
-    document.addEventListener("copy", function(evt){
-      // Change the copied text if you want
-      evt.clipboardData.setData("text/plain", "Copying is not allowed on this webpage");
-     
-      // Prevent the default copy action
-      evt.preventDefault();
-    }, false);
+    }
+    window.addEventListener("click", event => this.clickFunction(event));
 
     // this.controller.mainMenu();
     this.controller.load(); 
+  }
+
+  clickFunction(event) {
+    event.preventDefault();
   }
 }
