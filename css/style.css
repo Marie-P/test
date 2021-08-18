@@ -1,3 +1,6 @@
+body{
+    background-color: black;
+}
 canvas{
     -webkit-tap-highlight-color: red;
     -webkit-touch-callout: none;
