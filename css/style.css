@@ -1,3 +1,7 @@
 body{
     pointer-events: none;
 }
+
+canvas{
+    pointer-events: none;
+}
