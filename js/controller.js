@@ -326,6 +326,7 @@ export default class Controller {
       this.view.buttons._xLeft = this.view.directionalButtonsX - this.view.directionalButtonsH;
       this.view.buttons._yLeft = this.view.directionalButtonsY;
     }
+    event.preventDefault();
   }
 
   touchmoveFunction(event) {
@@ -349,6 +350,7 @@ export default class Controller {
         this.arrowRightMovement(this.model.character1);
       }
     }
+    event.preventDefault();
   }
 
   touchendFunction(event) {
