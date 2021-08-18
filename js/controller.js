@@ -286,7 +286,6 @@ export default class Controller {
     } 
   }
   touchstartFunction(event){
-    event.preventDefault();
     // joystick
     if((event.touches[0].clientX <= this.view._centerX + 50 && event.touches[0].clientX >= this.view._centerX - 50) && (event.touches[0].clientY <= this.view._centerY + 50 && event.touches[0].clientY >= this.view._centerY - 50)) {
       this.view._x = event.touches[0].clientX;
@@ -330,7 +329,6 @@ export default class Controller {
   }
 
   touchmoveFunction(event) {
-    event.preventDefault();
     if(this.model._isMoving) {
       if(event.touches[0].clientX <= this.view._centerX + 50 && event.touches[0].clientX >= this.view._centerX - 50)
         this.view._x = event.touches[0].clientX;
@@ -354,7 +352,6 @@ export default class Controller {
   }
 
   touchendFunction(event) {
-    event.preventDefault();
     this.model.countBeforeRunning1 = 0;
     this.view._x = this.view._centerX;
     this.view._y = this.view._centerY;
@@ -381,6 +378,7 @@ export default class Controller {
     this.view.buttons._hLeft = this.view.directionalButtonsH;
     this.view.buttons._xLeft = this.view.directionalButtonsX;
     this.view.buttons._yLeft = this.view.directionalButtonsY;
+    event.preventDefault();
   }
   
   /**
