@@ -19,15 +19,9 @@ class Main {
       window.addEventListener("touchstart", event => this.controller.touchstartFunction(event));
       window.addEventListener("touchmove", event => this.controller.touchmoveFunction(event));
       window.addEventListener("touchend", event => this.controller.touchendFunction(event));
-
     }
-    window.addEventListener("click", event => this.clickFunction(event));
 
     // this.controller.mainMenu();
     this.controller.load(); 
-  }
-
-  clickFunction(event) {
-    event.preventDefault();
   }
 }
