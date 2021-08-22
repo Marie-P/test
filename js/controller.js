@@ -560,7 +560,7 @@ export default class Controller {
 
   // TODO : séparer cette fonction en plusieurs étapes (sous-fonction) et régler le problème pour utiliser la même pour les deux joueurs
   checking(tilemap, canvas, character, camera, savedBackground, backgroundHeight) {
-    if (character.win()) this._isMoving = false;
+    if (character.move == "win") this._isMoving = false;
     if (document.body.clientWidth > 500){
       if (character.posX > 60) {
         tilemap[13 * canvas.width + 380] = savedBackground;
