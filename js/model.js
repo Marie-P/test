@@ -4,7 +4,7 @@ export default class Model {
   constructor() {
     this.nbPlayers = 1;
     this.map = new Map();
-    this.choosenFirstCharacter = "pikachu";
+    this.choosenFirstCharacter = "naruto";
     this.choosenSecondCharacter = "luffy";
     this.character1;
     this.character2;
@@ -26,7 +26,7 @@ export default class Model {
    async setMap() {
     this.map.tileset = await this.pic("./assets/tilesets/mines_of_sharega.png");
     this.map.numberLayers = 1;
-    this.map.mapHeight = 30;
+    // this.map.mapHeight = 30;
     this.map.mapWidth = 80;
     this.numberTiles = 1;
     this.map.tilesHeight = 16;
@@ -34,7 +34,7 @@ export default class Model {
     this.map.posX = 0;
     this.map.posY = 0;
     this.map.spritesSupport = [50, 130, 90];
-    this.map.sizeHeight = 3200;
+    this.map.sizeHeight = 1200;
     this.map.sizeWidth = 400;
     this.initMap();
   }

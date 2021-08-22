@@ -11,6 +11,7 @@ export default class Character {
     this.sprites.set("fall", {posX: [], posY: [], sprites: []});
     this.sprites.set("jump", {posX: [], posY: [], sprites: []});
     this.sprites.set("win", {posX: [], posY: [], sprites: []});
+    this.sprites.set("lose", {posX: [], posY: [], sprites: []});
     this.posX;
     this.posY;
     this.move = "stand";
@@ -97,5 +98,10 @@ export default class Character {
     this.move = "win";
     // this.state = this.state >= this.lastSprites.win - 1 ? this.lastSprites.win - 1 : this.state + 1;
     this.state = this.state >= this.lastSprites.win - 1 ? 0 : this.state + 1;
+  }
+
+  lose() {
+    this.move = "lose";
+    this.state = 0;
   }
 }

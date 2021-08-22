@@ -265,6 +265,25 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">pikachu_lose_01.png</key>
+            <key type="filename">pikachu_stand_01.png</key>
+            <key type="filename">pikachu_walk_01.png</key>
+            <key type="filename">pikachu_walk_03.png</key>
+            <key type="filename">pikachu_walk_05.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>9,8,19,15</rect>
+                <key>scale9Paddings</key>
+                <rect>9,8,19,15</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">pikachu_run_01.png</key>
             <key type="filename">pikachu_run_05.png</key>
             <key type="filename">pikachu_run_09.png</key>
@@ -333,24 +352,6 @@
                 <rect>13,6,25,12</rect>
                 <key>scale9Paddings</key>
                 <rect>13,6,25,12</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">pikachu_stand_01.png</key>
-            <key type="filename">pikachu_walk_01.png</key>
-            <key type="filename">pikachu_walk_03.png</key>
-            <key type="filename">pikachu_walk_05.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>9,8,19,15</rect>
-                <key>scale9Paddings</key>
-                <rect>9,8,19,15</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -526,6 +527,7 @@
             <filename>pikachu_win_36.png</filename>
             <filename>pikachu_win_37.png</filename>
             <filename>pikachu_win_38.png</filename>
+            <filename>pikachu_lose_01.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

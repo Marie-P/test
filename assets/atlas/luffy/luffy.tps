@@ -244,6 +244,22 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">luffy_lose_01.png</key>
+            <key type="filename">luffy_stand_01.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>10,15,21,31</rect>
+                <key>scale9Paddings</key>
+                <rect>10,15,21,31</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">luffy_run_01.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -347,21 +363,6 @@
                 <rect>14,12,28,25</rect>
                 <key>scale9Paddings</key>
                 <rect>14,12,28,25</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">luffy_stand_01.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>10,15,21,31</rect>
-                <key>scale9Paddings</key>
-                <rect>10,15,21,31</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -508,6 +509,7 @@
             <filename>luffy_win_06.png</filename>
             <filename>luffy_win_07.png</filename>
             <filename>luffy_win_08.png</filename>
+            <filename>luffy_lose_01.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

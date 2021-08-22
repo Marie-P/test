@@ -259,6 +259,22 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">naruto_lose_01.png</key>
+            <key type="filename">naruto_stand_01.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>11,15,21,29</rect>
+                <key>scale9Paddings</key>
+                <rect>11,15,21,29</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">naruto_run_01.png</key>
             <key type="filename">naruto_walk_01.png</key>
             <struct type="IndividualSpriteSettings">
@@ -338,21 +354,6 @@
                 <rect>13,12,26,25</rect>
                 <key>scale9Paddings</key>
                 <rect>13,12,26,25</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">naruto_stand_01.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>11,15,21,29</rect>
-                <key>scale9Paddings</key>
-                <rect>11,15,21,29</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -588,6 +589,7 @@
             <filename>naruto_win_16.png</filename>
             <filename>naruto_win_01.png</filename>
             <filename>naruto_win_02.png</filename>
+            <filename>naruto_lose_01.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

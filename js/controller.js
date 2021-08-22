@@ -157,6 +157,7 @@ export default class Controller {
     this.addSprites(character, character.name, "fall", character.lastSprites.fall);
     this.addSprites(character, character.name, "jump", character.lastSprites.jump);
     this.addSprites(character, character.name, "win", character.lastSprites.win);
+    this.addSprites(character, character.name, "lose", character.lastSprites.lose);
   }
 
   addSprites(character, nameCharacter, moveType, toGetLastSprites) {
@@ -171,11 +172,11 @@ export default class Controller {
 
   lastSprites(character) {
     if(character == "pikachu") {
-      return {walk: 5, stand : 1, fall : 1, run : 10, jump : 13, win : 38};
+      return {walk: 5, stand : 1, fall : 1, run : 10, jump : 13, win : 38, lose : 1};
     } else if(character == "naruto") {
-      return {walk: 6, stand : 1, fall : 1, run : 10, jump : 7, win : 15};
+      return {walk: 6, stand : 1, fall : 1, run : 10, jump : 7, win : 15, lose : 1};
     } else if(character == "luffy") {
-      return {walk: 5, stand : 1, fall : 1, run : 8, jump :6, win : 8};
+      return {walk: 5, stand : 1, fall : 1, run : 8, jump :6, win : 8, lose : 1};
     }
   }
 
@@ -196,11 +197,11 @@ export default class Controller {
    */
   setPosY(character, state) {
     if(character == "pikachu") {
-      return state == "walk" ? [0, -0.1, 0, -0.2, 0] : state == "run" ? 0.3 : state == "jump" ? [-0.0, -0.0, -0.3, -0.3, -0.5, -0.7, -6.5, -6.3, -6.2, -6, -5.5, -5, -5] : state == "win" ? -0.4 : 0;
+      return state == "walk" ? [0, -0.1, 0, -0.2, 0] : state == "run" ? 0.3 : state == "jump" ? [-0.0, -0.0, -0.3, -0.3, -0.5, -0.7, -6.5, -6.3, -6.2, -6, -5.5, -5, -5] : state == "win" ? -0.4 : state == "lose" ? 0 : 0;
     } else if(character == "naruto") {
-      return state == "walk" ? -1.8 : state == "run" ? -1 : state == "jump" ? [-0.7, -0.7, -6.5, -6.5, -6.5, -6, -5] : state == "win" ? [-3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -1, -1, -1] : -1.6;
+      return state == "walk" ? -1.8 : state == "run" ? -1 : state == "jump" ? [-0.7, -0.7, -6.5, -6.5, -6.5, -6, -5] : state == "win" ? [-3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -1, -1, -1] : state == "lose" ? -1.6 : -1.6;
     } else if(character == "luffy") {
-      return state == "walk" ? -2 : state == "run" ? -1.3 : state == "jump" ? [-1.8, -1.8, -7, -7, -7, -10] : -1.8;
+      return state == "walk" ? -2 : state == "run" ? -1.3 : state == "jump" ? [-1.8, -1.8, -7, -7, -7, -10] : state == "lose" ? -1.8: -1.8;
     }
   }
 
@@ -271,13 +272,13 @@ export default class Controller {
     switch(event.code) {
       case "ArrowRight":
         this.model.countBeforeRunning1 = 0;
-        if(this.model.character1.move != "fall" && this.model.character1.move != "jump" && this.model.character1.move != "win")
+        if(this.model.character1.move != "fall" && this.model.character1.move != "jump" && this.model.character1.move != "win" && this.model.character1.move != "lose")
           if(this.model.character1.move != "walk")
             this.model.character1.stand();
         break;
       case "KeyD":
         this.model.countBeforeRunning2 = 0;
-        if(this.model.character2.move != "fall" && this.model.character2.move != "jump" && this.model.character2.move != "win")
+        if(this.model.character2.move != "fall" && this.model.character2.move != "jump" && this.model.character2.move != "win" && this.model.character2.move != "lose")
           if(this.model.character2.move != "walk")
             this.model.character2.stand();
         break;
@@ -335,7 +336,7 @@ export default class Controller {
       if(event.touches[0].clientY <= this.view._centerY + 50 && event.touches[0].clientY >= this.view._centerY - 50)
         this.view._y = event.touches[0].clientY;
 
-      if(event.touches[0].clientY <= this.view._centerY - 10) {
+      if(event.touches[0].clientY <= this.view._centerY - 45) {
           this.arrowUpMovement(this.model.character1);
       }
         
@@ -343,6 +344,7 @@ export default class Controller {
         this.model.countBeforeRunning1 = 4;
         this.model._direction = 'E';
         this.model.character1.run();
+        this.arrowRightMovement(this.model.character1);
       }
       else if(event.touches[0].clientX >= this.view._centerX + 10){
         this.model.countBeforeRunning1 = 0;
@@ -369,12 +371,12 @@ export default class Controller {
     this.view.buttons._xRight = this.view.directionalButtonsX;
     this.view.buttons._yRight = this.view.directionalButtonsY;
 
-    // // down
+    // down
     this.view.buttons._hDown = this.view.directionalButtonsH;
     this.view.buttons._xDown = this.view.directionalButtonsX;
     this.view.buttons._yDown = this.view.directionalButtonsY;    
 
-    // // left
+    // left
     this.view.buttons._hLeft = this.view.directionalButtonsH;
     this.view.buttons._xLeft = this.view.directionalButtonsX;
     this.view.buttons._yLeft = this.view.directionalButtonsY;
@@ -445,12 +447,12 @@ export default class Controller {
     this.view.buttons._xRight = this.view.directionalButtonsX;
     this.view.buttons._yRight = this.view.directionalButtonsY;
 
-    // // down
+    // down
     this.view.buttons._hDown = this.view.directionalButtonsH;
     this.view.buttons._xDown = this.view.directionalButtonsX;
     this.view.buttons._yDown = this.view.directionalButtonsY;    
 
-    // // left
+    // left
     this.view.buttons._hLeft = this.view.directionalButtonsH;
     this.view.buttons._xLeft = this.view.directionalButtonsX;
     this.view.buttons._yLeft = this.view.directionalButtonsY;
@@ -463,15 +465,15 @@ export default class Controller {
       if(event.clientY <= this.view._centerY + 50 && event.clientY >= this.view._centerY - 50)
         this.view._y = event.clientY;
       
-      if(event.clientY <= this.view._centerY - 10) {
+      if(event.clientY <= this.view._centerY - 45) {
           this.arrowUpMovement(this.model.character1);
       }
         
-      else if(event.clientX >= this.view._centerX + 45){
+      else if(event.clientX >= this.view._centerX + 30){
         this.model.countBeforeRunning1 = 4;
         this.model._direction = 'E';
         this.model.character1.run();
-        // this.arrowRightMovement(this.model.character1);
+        this.arrowRightMovement(this.model.character1);
       }
       else if(event.clientX >= this.view._centerX + 10){
         this.model.countBeforeRunning1 = 0;
@@ -481,7 +483,7 @@ export default class Controller {
    }
 
   arrowRightMovement(character) {
-    if(character.move != "fall" && character.move != "jump" && character.move != "win") {
+    if(character.move != "fall" && character.move != "jump" && character.move != "win" && character.move != "lose") {
       if(this.model.countBeforeRunning1 > 3 && character == this.model.character1) {
         this.model._direction = 'E';
         character.run();
@@ -521,7 +523,7 @@ export default class Controller {
    loop(stamp) {
     this.loopPointer = window.requestAnimationFrame(stamp => this.loop(stamp));
     if (this.model.pressed){
-      if(this.model.countBeforeRunning1 > 30)
+      if(this.model.countBeforeRunning1 > 10)
         this.arrowRightMovement(this.model.character1);
       this.model.countBeforeRunning1++;
     }
@@ -532,9 +534,9 @@ export default class Controller {
 
     this.view.draw(this.model);
 
-    this.view.camera1 = this.checking(this.model.map.tilemap, this.view.canvas, this.model.character1, this.view.camera1, this.model.map.savedBackground1);
+    this.view.camera1 = this.checking(this.model.map.tilemap, this.view.canvas, this.model.character1, this.view.camera1, this.model.map.savedBackground1, this.view.backgroundHeight);
     if(this.model.nbPlayers == 2)
-      this.view.camera2 = this.checking(this.model.map.tilemap2, this.view.canvas2, this.model.character2, this.view.camera2, this.model.map.savedBackground2);
+      this.view.camera2 = this.checking(this.model.map.tilemap2, this.view.canvas2, this.model.character2, this.view.camera2, this.model.map.savedBackground2, this.view.backgroundHeight2);
     // this.checking1(this.model.map.tilemap, this.view.canvas);
     // this.checking2(this.model.map.tilemap2, this.view.canvas2);
 
@@ -553,22 +555,32 @@ export default class Controller {
    }
 
   // TODO : séparer cette fonction en plusieurs étapes (sous-fonction) et régler le problème pour utiliser la même pour les deux joueurs
-  checking(tilemap, canvas, character, camera, savedBackground) {
-    if(character.posX > 45) {
-      tilemap[13 * canvas.width + 380] = savedBackground;
-      character.win();
+  checking(tilemap, canvas, character, camera, savedBackground, backgroundHeight) {
+    if(document.body.clientWidth > 500){
+      if(character.posX > 60) {
+        tilemap[13 * canvas.width + 380] = savedBackground;
+        character.win();
+        if (this.model.nbPlayers == 2) { // L'autre adversaire ne pourra plus avancer
+          character == this.model.character2 ? this.model.character1.lose() : this.model.character2.lose()
+        }
+      }
+    } else {
+      if(character.posX > 15) {
+        tilemap[13 * canvas.width + 380] = savedBackground;
+        character.win();
+      } 
     }
     if(character.move == "jump"){
       character.jump();
     }
     // Pour faire avancer la caméra de la map
     if(document.body.clientWidth > 500) {
-      if(character.posX > 20 && camera < 335){
+      if(character.posX > 30 && camera < 320){
           camera += 1;
-          character.posX -= 0.5;
+          character.posX -= 1;
       }
     } else {
-      if(character.posX > 1 && camera < 335){
+      if(character.posX > 1 && camera < 365){
         camera += 1;
         character.posX -= 0.5;
       }
@@ -580,14 +592,14 @@ export default class Controller {
       character.fall();
     }
     // Retour case départ quand il tombe
-    if (character.posY > this.model.map.mapHeight){
+    if (character.posY > backgroundHeight){
       character.posX = 0;
       camera = 0;
       character.posY = 12;
       character.move = "stand";
     }
 
-    if (character.move == "fall" && (character.posY > this.model.map.mapHeight || (this.model.map.spritesSupport.includes(tilemap[(character.posY + 2) * this.view.canvas.width + Math.round(character.posX + camera) + 1])))){
+    if (character.move == "fall" && (character.posY > this.view.backgroundHeight || (this.model.map.spritesSupport.includes(tilemap[(character.posY + 2) * this.view.canvas.width + Math.round(character.posX + camera) + 1])))){
       character.move = "stand";
     }
     return camera;
