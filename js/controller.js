@@ -335,20 +335,22 @@ export default class Controller {
         this.view._x = event.touches[0].clientX;
       if(event.touches[0].clientY <= this.view._centerY + 50 && event.touches[0].clientY >= this.view._centerY - 50)
         this.view._y = event.touches[0].clientY;
-
-      if(event.touches[0].clientY <= this.view._centerY - 45) {
-          this.arrowUpMovement(this.model.character1);
-      }
-        
-      else if(event.touches[0].clientX >= this.view._centerX + 45){
-        this.model.countBeforeRunning1 = 4;
-        this.model._direction = 'E';
-        this.model.character1.run();
-        this.arrowRightMovement(this.model.character1);
-      }
-      else if(event.touches[0].clientX >= this.view._centerX + 10){
-        this.model.countBeforeRunning1 = 0;
-        this.arrowRightMovement(this.model.character1);
+      
+      if (this.model.character1.move != "win" && this.model.character1.move != "lose"){
+        if(event.touches[0].clientY <= this.view._centerY - 45) {
+            this.arrowUpMovement(this.model.character1);
+        }
+          
+        else if(event.touches[0].clientX >= this.view._centerX + 45){
+          this.model.countBeforeRunning1 = 4;
+          this.model._direction = 'E';
+          this.model.character1.run();
+          this.arrowRightMovement(this.model.character1);
+        }
+        else if(event.touches[0].clientX >= this.view._centerX + 10){
+          this.model.countBeforeRunning1 = 0;
+          this.arrowRightMovement(this.model.character1);
+        }
       }
     }
   }
@@ -460,14 +462,14 @@ export default class Controller {
     this.view.buttons._yLeft = this.view.directionalButtonsY;
    }
 
-   mousemoveFunction(event) {
-    if (this.model.character1.move != "win" && this.model.character1.move != "lose"){
-      if(this.model._isMoving) {
-        if(event.clientX <= this.view._centerX + 50 && event.clientX >= this.view._centerX - 50)
-          this.view._x = event.clientX;
-        if(event.clientY <= this.view._centerY + 50 && event.clientY >= this.view._centerY - 50)
-          this.view._y = event.clientY;
-        
+  mousemoveFunction(event) {
+    if(this.model._isMoving) {
+      if(event.clientX <= this.view._centerX + 50 && event.clientX >= this.view._centerX - 50)
+        this.view._x = event.clientX;
+      if(event.clientY <= this.view._centerY + 50 && event.clientY >= this.view._centerY - 50)
+        this.view._y = event.clientY;
+      
+      if (this.model.character1.move != "win" && this.model.character1.move != "lose"){
         if(event.clientY <= this.view._centerY - 45) {
             this.arrowUpMovement(this.model.character1);
         }
@@ -483,8 +485,8 @@ export default class Controller {
           this.arrowRightMovement(this.model.character1);
         }
       }
-     }
     }
+  }
 
   arrowRightMovement(character) {
     if(character.move != "fall" && character.move != "jump" && character.move != "win" && character.move != "lose") {
@@ -560,9 +562,8 @@ export default class Controller {
 
   // TODO : séparer cette fonction en plusieurs étapes (sous-fonction) et régler le problème pour utiliser la même pour les deux joueurs
   checking(tilemap, canvas, character, camera, savedBackground, backgroundHeight) {
-    if (character.move == "win") this._isMoving = false;
-    if (document.body.clientWidth > 500){
-      if (character.posX > 60) {
+    if(document.body.clientWidth > 500){
+      if(character.posX > 60) {
         tilemap[13 * canvas.width + 380] = savedBackground;
         character.win();
         if (this.model.nbPlayers == 2) { // L'autre adversaire ne pourra plus avancer
