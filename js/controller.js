@@ -95,41 +95,41 @@ export default class Controller {
   /**
    * Initialisation du parcours.
    */
-  //  setCourse(canvas, tilemap) {
-  //   let y = 14,
-  //     sprite = this.model.map.spritesSupport[Math.floor(Math.random()*this.model.map.spritesSupport.length)];
-  //   for (let x = 0; x < this.model.map.sizeWidth; x++) {
-  //     let randNumber = Math.floor(Math.random() * 2),
-  //         maxX = x + 5;
-  //     // if(randNumber == 1 || x < 5 || x > 375) {
-  //       for(x -= 1; x < maxX; x++){
-  //         tilemap[y * canvas.width + x] = sprite;
-  //     //   }
-  //     // } else{
-  //       // for(x -= 1; x < maxX; x++){
-  //         // tilemap[(y - 5) * canvas.width + x] = sprite;
-  //       // }
-  //     }
-  //   }
-  // }
-
    setCourse(canvas, tilemap) {
     let y = 14,
       sprite = this.model.map.spritesSupport[Math.floor(Math.random()*this.model.map.spritesSupport.length)];
     for (let x = 0; x < this.model.map.sizeWidth; x++) {
       let randNumber = Math.floor(Math.random() * 2),
           maxX = x + 5;
-      if(randNumber == 1 || x < 5 || x > 375) {
+      // if(randNumber == 1 || x < 5 || x > 375) {
         for(x -= 1; x < maxX; x++){
           tilemap[y * canvas.width + x] = sprite;
-        }
-      } else{
-        for(x -= 1; x < maxX; x++){
-          tilemap[(y - 5) * canvas.width + x] = sprite;
-        }
+      //   }
+      // } else{
+        // for(x -= 1; x < maxX; x++){
+          // tilemap[(y - 5) * canvas.width + x] = sprite;
+        // }
       }
     }
   }
+
+  //  setCourse(canvas, tilemap) {
+  //   let y = 14,
+  //     sprite = this.model.map.spritesSupport[Math.floor(Math.random()*this.model.map.spritesSupport.length)];
+  //   for (let x = 0; x < this.model.map.sizeWidth; x++) {
+  //     let randNumber = Math.floor(Math.random() * 2),
+  //         maxX = x + 5;
+  //     if(randNumber == 1 || x < 5 || x > 375) {
+  //       for(x -= 1; x < maxX; x++){
+  //         tilemap[y * canvas.width + x] = sprite;
+  //       }
+  //     } else{
+  //       for(x -= 1; x < maxX; x++){
+  //         tilemap[(y - 5) * canvas.width + x] = sprite;
+  //       }
+  //     }
+  //   }
+  // }
 
   /**
    * Initialisation des personnages.
@@ -354,6 +354,7 @@ export default class Controller {
   }
 
   touchendFunction(event) {
+    if (this.model.character1.move == "run") this.model.character1.stand();
     this.model.countBeforeRunning1 = 0;
     this.view._x = this.view._centerX;
     this.view._y = this.view._centerY;
@@ -429,6 +430,7 @@ export default class Controller {
    }
 
    mouseupFunction(event) {
+    if (this.model.character1.move == "run") this.model.character1.stand();
     this.model.countBeforeRunning1 = 0;
     // joystick
     this.view._x = this.view._centerX;
@@ -459,28 +461,30 @@ export default class Controller {
    }
 
    mousemoveFunction(event) {
-    if(this.model._isMoving) {
-      if(event.clientX <= this.view._centerX + 50 && event.clientX >= this.view._centerX - 50)
-        this.view._x = event.clientX;
-      if(event.clientY <= this.view._centerY + 50 && event.clientY >= this.view._centerY - 50)
-        this.view._y = event.clientY;
-      
-      if(event.clientY <= this.view._centerY - 45) {
-          this.arrowUpMovement(this.model.character1);
-      }
+    if (this.model.character1.move != "win" && this.model.character1.move != "lose"){
+      if(this.model._isMoving) {
+        if(event.clientX <= this.view._centerX + 50 && event.clientX >= this.view._centerX - 50)
+          this.view._x = event.clientX;
+        if(event.clientY <= this.view._centerY + 50 && event.clientY >= this.view._centerY - 50)
+          this.view._y = event.clientY;
         
-      else if(event.clientX >= this.view._centerX + 30){
-        this.model.countBeforeRunning1 = 4;
-        this.model._direction = 'E';
-        this.model.character1.run();
-        this.arrowRightMovement(this.model.character1);
+        if(event.clientY <= this.view._centerY - 45) {
+            this.arrowUpMovement(this.model.character1);
+        }
+          
+        else if(event.clientX >= this.view._centerX + 30){
+          this.model.countBeforeRunning1 = 4;
+          this.model._direction = 'E';
+          this.model.character1.run();
+          this.arrowRightMovement(this.model.character1);
+        }
+        else if(event.clientX >= this.view._centerX + 10){
+          this.model.countBeforeRunning1 = 0;
+          this.arrowRightMovement(this.model.character1);
+        }
       }
-      else if(event.clientX >= this.view._centerX + 10){
-        this.model.countBeforeRunning1 = 0;
-        this.arrowRightMovement(this.model.character1);
-      }
+     }
     }
-   }
 
   arrowRightMovement(character) {
     if(character.move != "fall" && character.move != "jump" && character.move != "win" && character.move != "lose") {
