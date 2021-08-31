@@ -95,41 +95,41 @@ export default class Controller {
   /**
    * Initialisation du parcours.
    */
-   setCourse(canvas, tilemap) {
-    let y = 14,
-      sprite = this.model.map.spritesSupport[Math.floor(Math.random()*this.model.map.spritesSupport.length)];
-    for (let x = 0; x < this.model.map.sizeWidth; x++) {
-      let randNumber = Math.floor(Math.random() * 2),
-          maxX = x + 5;
-      // if(randNumber == 1 || x < 5 || x > 375) {
-        for(x -= 1; x < maxX; x++){
-          tilemap[y * canvas.width + x] = sprite;
-      //   }
-      // } else{
-        // for(x -= 1; x < maxX; x++){
-          // tilemap[(y - 5) * canvas.width + x] = sprite;
-        // }
-      }
-    }
-  }
-
   //  setCourse(canvas, tilemap) {
   //   let y = 14,
   //     sprite = this.model.map.spritesSupport[Math.floor(Math.random()*this.model.map.spritesSupport.length)];
   //   for (let x = 0; x < this.model.map.sizeWidth; x++) {
   //     let randNumber = Math.floor(Math.random() * 2),
   //         maxX = x + 5;
-  //     if(randNumber == 1 || x < 5 || x > 375) {
+  //     // if(randNumber == 1 || x < 5 || x > 375) {
   //       for(x -= 1; x < maxX; x++){
   //         tilemap[y * canvas.width + x] = sprite;
-  //       }
-  //     } else{
-  //       for(x -= 1; x < maxX; x++){
-  //         tilemap[(y - 5) * canvas.width + x] = sprite;
-  //       }
+  //     //   }
+  //     // } else{
+  //       // for(x -= 1; x < maxX; x++){
+  //         // tilemap[(y - 5) * canvas.width + x] = sprite;
+  //       // }
   //     }
   //   }
   // }
+
+   setCourse(canvas, tilemap) {
+    let y = 14,
+      sprite = this.model.map.spritesSupport[Math.floor(Math.random()*this.model.map.spritesSupport.length)];
+    for (let x = 0; x < this.model.map.sizeWidth; x++) {
+      let randNumber = Math.floor(Math.random() * 2),
+          maxX = x + 5;
+      if(randNumber == 1 || x < 5 || x > 375) {
+        for(x -= 1; x < maxX; x++){
+          tilemap[y * canvas.width + x] = sprite;
+        }
+      } else{
+        for(x -= 1; x < maxX; x++){
+          tilemap[(y - 5) * canvas.width + x] = sprite;
+        }
+      }
+    }
+  }
 
   /**
    * Initialisation des personnages.
