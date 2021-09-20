@@ -6,14 +6,170 @@ export default class Controller {
   constructor() {
     this.model = new Model();
     this.view = new View(this.model.nbPlayers);
+    this.charactersNames = ["luffy", "pikachu", "naruto", "Valider.",  "Retour au menu principal."];
+    this.charactersUrls = ["./assets/menu/luffy_choix.png", "./assets/menu/pikachu_choix.png", "./assets/menu/naruto_choix.png"];
+    this.selectionMenu = [this.validate, this.backToMainMenu];
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////// Partie Menu //////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Menu d'accueil qui permet de choisir un ou deux joueurs.
+   */
+   mainMenu() {
+    let container = document.createElement("div"), welcomeText = document.createElement("p");
+    container.className = "mainMenu";
+    welcomeText.innerHTML = "Bienvenue dans ce crossover multiplateforme !<br><br>Choisissez une option : ";
+    container.appendChild(welcomeText);  
+    let sectionNames = ["1 Joueur", "2 Joueurs"], urls = ["", ""], sectionFunctions = [this.onePlayer, this.twoPlayers];
+    for (let i = 0; i < 2; i++) {
+      let btn = this.addButton(sectionNames[i], urls[i], sectionFunctions[i]);
+      if (i == 1 && document.body.clientWidth <= 500) // Pour les petits écrans, l'utilisateur verra le bouton 2eme joueur apparaitre en rouge s'il est sélectionné
+        btn.className = "cantBeChosen";
+      container.appendChild(btn);
+    }
+    document.body.appendChild(container);
+  }
+
+  /**
+   *  Pour ajouter un bouton sur le body.
+   * @param {String} sectionName : nom du bouton.
+   * @param {String} url : path de l'image (utiliser pour la sélection des personnages).
+   * @param {String} sectionFunction : fonction associée au bouton.
+   */
+  addButton(sectionName, url, sectionFunction) {
+    let btn = document.createElement("button");
+    let text = document.createTextNode(sectionName);
+    if(url){
+      let image = new Image();
+      image.src = url;
+      btn.appendChild(image);
+    } else {
+      btn.appendChild(text);
+    } 
+    if(sectionFunction == this.getCharacter1 || sectionFunction == this.getCharacter2)
+      btn.addEventListener("click", sectionFunction.bind(this, text));
+    else
+      btn.addEventListener("click", sectionFunction.bind(this));
+    return btn;
+  }
+
+  /**
+   * Méthode pour enlever tous les éléments du body.
+   */
+  clean(){
+    while(document.body.childNodes.length)
+      document.body.removeChild(document.body.firstChild);
+  }
+
+  /**
+   * Retour au menu principal.
+   */
+  backToMainMenu() {
+    this.clean();
+    this.stop();
+    document.body.style.overflow = 'auto';
+    this.mainMenu();
+  }
+
+  /**
+   * Pour récupérer le personnage choisi par le premier joueur.
+   * @param {TextNode} character : personnage choisi.
+   */
+  getCharacter1(character) {
+    this.model.choosenFirstCharacter = character.nodeValue;
+  }
+
+  /**
+   * Pour récupérer le personnage choisi par le deuxième joueur.
+   * @param {TextNode} character : personnage choisi.
+   */
+  getCharacter2(character) {
+    this.model.choosenSecondCharacter = character.nodeValue;
+  }
+
+  // Les boutons pour sélectionner un personnage.
+  addCharactersButtons(selectionText, getFunction) {
+    let container = document.createElement("div");
+    container.appendChild(selectionText);    
+    for (let i = 0; i < 3; i++) {
+      let btn = this.addButton(this.charactersNames[i], this.charactersUrls[i], getFunction);
+      container.appendChild(btn);
+    }
+    document.body.appendChild(container);
+  }
+
+  /**
+   * Méthode pour ajouter les boutons valider et de retour.
+   */
+  addSelectionButtons() {
+    let containerInteraction = document.createElement("div");
+    for (let i = 0; i < 2; i++) {
+      let btn = this.addButton(this.charactersNames[i+3], "", this.selectionMenu[i]);
+      btn.style.width = "400px";
+      btn.style.height = "70px";
+      
+      containerInteraction.appendChild(btn);
+    }
+    document.body.appendChild(containerInteraction);
+  }
+
+  /**
+   * Méthode lancée s'il y a qu'un joueur.
+   */
+  onePlayer() {
+    this.clean();
+    this.model.nbPlayers = 1;
+    let textPlayer1 = document.createElement("p");
+    textPlayer1.innerHTML = "Joueur 1 : ";
+    this.addCharactersButtons(textPlayer1, this.getCharacter1);
+    this.addSelectionButtons();
+  }
+
+  /**
+   * Méthode lancée s'il y a deux joueurs.
+   */
+  twoPlayers() {
+    if(document.body.clientWidth > 500) {
+      this.clean();
+      this.model.nbPlayers = 2;
+      let textPlayer1 = document.createElement("p"), textPlayer2 = document.createElement("p");
+      textPlayer1.innerHTML = "Joueur 1 : ";
+      textPlayer2.innerHTML = "Joueur 2 : ";
+      this.addCharactersButtons(textPlayer1, this.getCharacter1);
+      this.addCharactersButtons(textPlayer2, this.getCharacter2);
+      this.addSelectionButtons();
+    }
+  }
+
+  /**
+   * Pour lancer le jeu.
+   */
+  validate(){
+    this.clean();
+    // let valid = this.addButton("", "./assets/menu/arrow_left.png", this.backToMainMenu);
+    this.view.camera1 = 0;
+    // valid.style.width = "70px";
+    // valid.style.height = "35px";
+    // valid.style.padding = "0px";
+    // document.body.appendChild(valid);
+    this.load();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////// Partie jeu ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////
+
   async load() {
+    this.view.setView(this.model.nbPlayers);
     await this.initMap();
     await this.initCharacters();
     document.body.appendChild(this.view.canvas);
     if(this.model.nbPlayers == 2)
       document.body.appendChild(this.view.canvas2);
+    document.body.style.overflow = 'hidden';
     this.start();
   }
 
@@ -172,7 +328,7 @@ export default class Controller {
 
   lastSprites(character) {
     if(character == "pikachu") {
-      return {walk: 5, stand : 1, fall : 1, run : 10, jump : 13, win : 38, lose : 1};
+      return {walk: 5, stand : 1, fall : 1, run : 5, jump : 7, win : 10, lose : 1};
     } else if(character == "naruto") {
       return {walk: 6, stand : 1, fall : 1, run : 10, jump : 7, win : 15, lose : 1};
     } else if(character == "luffy") {
@@ -197,7 +353,7 @@ export default class Controller {
    */
   setPosY(character, state) {
     if(character == "pikachu") {
-      return state == "walk" ? [0, -0.1, 0, -0.2, 0] : state == "run" ? 0.3 : state == "jump" ? [-0.0, -0.0, -0.3, -0.3, -0.5, -0.7, -6.5, -6.3, -6.2, -6, -5.5, -5, -5] : state == "win" ? -0.4 : state == "lose" ? 0 : 0;
+      return state == "walk" ? [0, -0.1, 0, -0.2, 0] : state == "run" ? 0.3 : state == "jump" ? [-0.7, -3, -6.5, -6.5, -6.5, -6, -5] : state == "win" ? -0.4 : state == "lose" ? 0 : 0;
     } else if(character == "naruto") {
       return state == "walk" ? -1.8 : state == "run" ? -1 : state == "jump" ? [-0.7, -0.7, -6.5, -6.5, -6.5, -6, -5] : state == "win" ? [-3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -1, -1, -1] : state == "lose" ? -1.6 : -1.6;
     } else if(character == "luffy") {
@@ -209,8 +365,6 @@ export default class Controller {
    * Cette méthode permet de, en fonction des touches enregistrées dans le tableau, bouger les personnages
    */
   moveWithKeys() {
-    // if(this.model.nbPlayers == 1)
-    //   this.model._isMoving = true;
     this.model.keysArray.forEach(element => {
       switch(element) {
         case "ArrowRight":
@@ -242,27 +396,9 @@ export default class Controller {
     if(this.model.keysArray.indexOf(event.code) === -1)
       this.model.keysArray.push(event.code);
     this.moveWithKeys();
-    // if(this.model.nbPlayers == 1)
-    //   this.model._isMoving = true;
-    // switch(event.code) {
-    //   case "ArrowRight":
-    //     this.arrowRightMovement(this.model.character1);
-    //     break;
-    //   case "ArrowUp":
-    //     this.model._direction = 'N';
-    //     this.arrowUpMovement(this.model.character1);
-    //     break;
-    //   default:
-    //     this.model._direction = null;
-    //     break;
-    // }
   }
 
   keyupFunction(event) {
-    // if(this.model.nbPlayers == 1)
-    // this.model._isMoving = false;
-    // this.removeKey(this.model.keysArray, event);
-
     this.model.keysArray.splice(this.model.keysArray.indexOf(event.code), this.model.keysArray.indexOf(event.code) + 1)
     if (event.code == "ArrowUp" || event.code == "ArrowLeft" || event.code == "ArrowDown" || event.code == "ArrowRight")
       this._isMoving = false;
@@ -284,105 +420,111 @@ export default class Controller {
         break;
       default:
         break;
-    } 
+    }
   }
   touchstartFunction(event){
-    // joystick
-    if((event.touches[0].clientX <= this.view._centerX + 50 && event.touches[0].clientX >= this.view._centerX - 50) && (event.touches[0].clientY <= this.view._centerY + 50 && event.touches[0].clientY >= this.view._centerY - 50)) {
-      this.view._x = event.touches[0].clientX;
-      this.view._y = event.touches[0].clientY;
-      
-      this.model._isMoving = true;
-    }
-
-    // touches directionnelles
-    // up
-    if((event.touches[0].clientX < this.view.directionalButtonsX + this.view.directionalButtonsH && event.touches[0].clientX > this.view.directionalButtonsX - (this.view.buttons._wx - 5)) && (event.touches[0].clientY < this.view.directionalButtonsY - (this.view.buttons._wy - 5) - this.view.directionalButtonsH && event.touches[0].clientY > this.view.directionalButtonsY - this.view.buttons._wy * 2)) {
-      this.model._direction = 'N';
-      this.arrowUpMovement(this.model.character1);
-      this.view.buttons._hUp = 0;
-      this.view.buttons._xUp = this.view.directionalButtonsX;
-      this.view.buttons._yUp = this.view.directionalButtonsY - this.view.directionalButtonsH;
-    }
-
-    // right
-    else if((event.touches[0].clientY < this.view.directionalButtonsY + this.view.directionalButtonsH && event.touches[0].clientY > this.view.directionalButtonsY - (this.view.buttons._wy - 5)) && (event.touches[0].clientX < this.view.directionalButtonsX + (this.view.buttons._wx + 5) + this.view.directionalButtonsH && event.touches[0].clientX > this.view.directionalButtonsX + this.view.directionalButtonsH)){
-      this.arrowRightMovement(this.model.character1);
-      this.model.pressed = true;
-      this.view.buttons._hRight = 0;
-      this.view.buttons._xRight = this.view.directionalButtonsX + this.view.directionalButtonsH;
-      this.view.buttons._yRight = this.view.directionalButtonsY;
-    }
-
-    // down
-    else if((event.touches[0].clientX < this.view.directionalButtonsX + this.view.directionalButtonsH && event.touches[0].clientX > this.view.directionalButtonsX - (this.view.buttons._wx - 5)) && (event.touches[0].clientY < this.view.directionalButtonsY + (this.view.buttons._wy + 5) + this.view.directionalButtonsH && event.touches[0].clientY > this.view.directionalButtonsY + this.view.directionalButtonsH)) {
-      this.view.buttons._hDown = 0;
-      this.view.buttons._xDown = this.view.directionalButtonsX;
-      this.view.buttons._yDown = this.view.directionalButtonsY + this.view.directionalButtonsH;
-    }
-
-    // left
-    else if((event.touches[0].clientY < this.view.directionalButtonsY + this.view.directionalButtonsH && event.touches[0].clientY > this.view.directionalButtonsY - (this.view.buttons._wy - 5)) && (event.touches[0].clientX < this.view.directionalButtonsX - (this.view.buttons._wx - 5) - this.view.directionalButtonsH && event.touches[0].clientX > this.view.directionalButtonsX - this.view.buttons._wx * 2)){
-      this.view.buttons._hLeft = 0;
-      this.view.buttons._xLeft = this.view.directionalButtonsX - this.view.directionalButtonsH;
-      this.view.buttons._yLeft = this.view.directionalButtonsY;
-    }
-  }
-
-  touchmoveFunction(event) {
-    if(this.model._isMoving) {
-      if(event.touches[0].clientX <= this.view._centerX + 50 && event.touches[0].clientX >= this.view._centerX - 50)
+    if (this.model.nbPlayers == 1) {
+      // joystick
+      if((event.touches[0].clientX <= this.view._centerX + 50 && event.touches[0].clientX >= this.view._centerX - 50) && (event.touches[0].clientY <= this.view._centerY + 50 && event.touches[0].clientY >= this.view._centerY - 50)) {
         this.view._x = event.touches[0].clientX;
-      if(event.touches[0].clientY <= this.view._centerY + 50 && event.touches[0].clientY >= this.view._centerY - 50)
         this.view._y = event.touches[0].clientY;
-      
-      if (this.model.character1.move != "win" && this.model.character1.move != "lose"){
-        if(event.touches[0].clientY <= this.view._centerY - 45) {
-            this.arrowUpMovement(this.model.character1);
-        }
-          
-        else if(event.touches[0].clientX >= this.view._centerX + 45){
-          this.model.countBeforeRunning1 = 4;
-          this.model._direction = 'E';
-          this.model.character1.run();
-          this.arrowRightMovement(this.model.character1);
-        }
-        else if(event.touches[0].clientX >= this.view._centerX + 10){
-          this.model.countBeforeRunning1 = 0;
-          this.arrowRightMovement(this.model.character1);
-        }
+        
+        this.model._isMoving = true;
+      }
+
+      // touches directionnelles
+      // up
+      if((event.touches[0].clientX < this.view.directionalButtonsX + this.view.directionalButtonsH && event.touches[0].clientX > this.view.directionalButtonsX - (this.view.buttons._wx - 5)) && (event.touches[0].clientY < this.view.directionalButtonsY - (this.view.buttons._wy - 5) - this.view.directionalButtonsH && event.touches[0].clientY > this.view.directionalButtonsY - this.view.buttons._wy * 2)) {
+        this.model._direction = 'N';
+        this.arrowUpMovement(this.model.character1);
+        this.view.buttons._hUp = 0;
+        this.view.buttons._xUp = this.view.directionalButtonsX;
+        this.view.buttons._yUp = this.view.directionalButtonsY - this.view.directionalButtonsH;
+      }
+
+      // right
+      else if((event.touches[0].clientY < this.view.directionalButtonsY + this.view.directionalButtonsH && event.touches[0].clientY > this.view.directionalButtonsY - (this.view.buttons._wy - 5)) && (event.touches[0].clientX < this.view.directionalButtonsX + (this.view.buttons._wx + 5) + this.view.directionalButtonsH && event.touches[0].clientX > this.view.directionalButtonsX + this.view.directionalButtonsH)){
+        this.arrowRightMovement(this.model.character1);
+        this.model.pressed = true;
+        this.view.buttons._hRight = 0;
+        this.view.buttons._xRight = this.view.directionalButtonsX + this.view.directionalButtonsH;
+        this.view.buttons._yRight = this.view.directionalButtonsY;
+      }
+
+      // down
+      else if((event.touches[0].clientX < this.view.directionalButtonsX + this.view.directionalButtonsH && event.touches[0].clientX > this.view.directionalButtonsX - (this.view.buttons._wx - 5)) && (event.touches[0].clientY < this.view.directionalButtonsY + (this.view.buttons._wy + 5) + this.view.directionalButtonsH && event.touches[0].clientY > this.view.directionalButtonsY + this.view.directionalButtonsH)) {
+        this.view.buttons._hDown = 0;
+        this.view.buttons._xDown = this.view.directionalButtonsX;
+        this.view.buttons._yDown = this.view.directionalButtonsY + this.view.directionalButtonsH;
+      }
+
+      // left
+      else if((event.touches[0].clientY < this.view.directionalButtonsY + this.view.directionalButtonsH && event.touches[0].clientY > this.view.directionalButtonsY - (this.view.buttons._wy - 5)) && (event.touches[0].clientX < this.view.directionalButtonsX - (this.view.buttons._wx - 5) - this.view.directionalButtonsH && event.touches[0].clientX > this.view.directionalButtonsX - this.view.buttons._wx * 2)){
+        this.view.buttons._hLeft = 0;
+        this.view.buttons._xLeft = this.view.directionalButtonsX - this.view.directionalButtonsH;
+        this.view.buttons._yLeft = this.view.directionalButtonsY;
       }
     }
   }
 
+  touchmoveFunction(event) {
+    if (this.model.nbPlayers == 1) {
+      if(this.model._isMoving) {
+        if(event.touches[0].clientX <= this.view._centerX + 50 && event.touches[0].clientX >= this.view._centerX - 50)
+          this.view._x = event.touches[0].clientX;
+        if(event.touches[0].clientY <= this.view._centerY + 50 && event.touches[0].clientY >= this.view._centerY - 50)
+          this.view._y = event.touches[0].clientY;
+        
+        if (this.model.character1.move != "win" && this.model.character1.move != "lose"){
+          if(event.touches[0].clientY <= this.view._centerY - 45) {
+              this.arrowUpMovement(this.model.character1);
+          }
+            
+          else if(event.touches[0].clientX >= this.view._centerX + 45){
+            this.model.countBeforeRunning1 = 4;
+            this.model._direction = 'E';
+            this.model.character1.run();
+            this.arrowRightMovement(this.model.character1);
+          }
+          else if(event.touches[0].clientX >= this.view._centerX + 10){
+            this.model.countBeforeRunning1 = 0;
+            this.arrowRightMovement(this.model.character1);
+          }
+        }
+      }
+    } 
+  }
+
   touchendFunction(event) {
-    if (this.model.character1.move == "run") this.model.character1.stand();
-    this.model.countBeforeRunning1 = 0;
-    this.view._x = this.view._centerX;
-    this.view._y = this.view._centerY;
-    this.model._isMoving = false;
-    this.model.pressed = false;
+    if (this.model.nbPlayers == 1) {
+      if (this.model.character1.move == "run") this.model.character1.stand();
+      this.model.countBeforeRunning1 = 0;
+      this.view._x = this.view._centerX;
+      this.view._y = this.view._centerY;
+      this.model._isMoving = false;
+      this.model.pressed = false;
 
-    // touches directionnelles
-    // up
-    this.view.buttons._hUp = this.view.directionalButtonsH;
-    this.view.buttons._xUp = this.view.directionalButtonsX;
-    this.view.buttons._yUp = this.view.directionalButtonsY;
+      // touches directionnelles
+      // up
+      this.view.buttons._hUp = this.view.directionalButtonsH;
+      this.view.buttons._xUp = this.view.directionalButtonsX;
+      this.view.buttons._yUp = this.view.directionalButtonsY;
 
-    // right
-    this.view.buttons._hRight = this.view.directionalButtonsH;
-    this.view.buttons._xRight = this.view.directionalButtonsX;
-    this.view.buttons._yRight = this.view.directionalButtonsY;
+      // right
+      this.view.buttons._hRight = this.view.directionalButtonsH;
+      this.view.buttons._xRight = this.view.directionalButtonsX;
+      this.view.buttons._yRight = this.view.directionalButtonsY;
 
-    // down
-    this.view.buttons._hDown = this.view.directionalButtonsH;
-    this.view.buttons._xDown = this.view.directionalButtonsX;
-    this.view.buttons._yDown = this.view.directionalButtonsY;    
+      // down
+      this.view.buttons._hDown = this.view.directionalButtonsH;
+      this.view.buttons._xDown = this.view.directionalButtonsX;
+      this.view.buttons._yDown = this.view.directionalButtonsY;    
 
-    // left
-    this.view.buttons._hLeft = this.view.directionalButtonsH;
-    this.view.buttons._xLeft = this.view.directionalButtonsX;
-    this.view.buttons._yLeft = this.view.directionalButtonsY;
+      // left
+      this.view.buttons._hLeft = this.view.directionalButtonsH;
+      this.view.buttons._xLeft = this.view.directionalButtonsX;
+      this.view.buttons._yLeft = this.view.directionalButtonsY;
+    }
   }
   
   /**
@@ -390,79 +532,97 @@ export default class Controller {
    * @param {MouseEvent} event - représente l'événement de click.
    */
    mousedownFunction(event) {
-    // joystick
-    if((event.clientX <= this.view._centerX + 50 && event.clientX >= this.view._centerX - 50) && (event.clientY <= this.view._centerY + 50 && event.clientY >= this.view._centerY - 50)) {
-      this._x = event.clientX;
-      this._y = event.clientY;
-      this.model._isMoving = true;
-    }
-
-    // touches directionnelles
-    // up
-    if((event.clientX < this.view.directionalButtonsX + this.view.directionalButtonsH && event.clientX > this.view.directionalButtonsX - (this.view.buttons._wx - 5)) && (event.clientY < this.view.directionalButtonsY - (this.view.buttons._wy - 5) - this.view.directionalButtonsH && event.clientY > this.view.directionalButtonsY - this.view.buttons._wy * 2)) {
-      this.model._direction = 'N';
-      this.arrowUpMovement(this.model.character1);
-      this.view.buttons._hUp = 0;
-      this.view.buttons._xUp = this.view.directionalButtonsX;
-      this.view.buttons._yUp = this.view.directionalButtonsY - this.view.directionalButtonsH;
-    }
-
-    // right
-    else if((event.clientY < this.view.directionalButtonsY + this.view.directionalButtonsH && event.clientY > this.view.directionalButtonsY - (this.view.buttons._wy - 5)) && (event.clientX < this.view.directionalButtonsX + (this.view.buttons._wx + 5) + this.view.directionalButtonsH && event.clientX > this.view.directionalButtonsX + this.view.directionalButtonsH)){
-      this.arrowRightMovement(this.model.character1);
-      this.model.pressed = true;
-      this.view.buttons._hRight = 0;
-      this.view.buttons._xRight = this.view.directionalButtonsX + this.view.directionalButtonsH;
-      this.view.buttons._yRight = this.view.directionalButtonsY;
-    }
-
-    // down
-    else if((event.clientX < this.view.directionalButtonsX + this.view.directionalButtonsH && event.clientX > this.view.directionalButtonsX - (this.view.buttons._wx - 5)) && (event.clientY < this.view.directionalButtonsY + (this.view.buttons._wy + 5) + this.view.directionalButtonsH && event.clientY > this.view.directionalButtonsY + this.view.directionalButtonsH)) {
-      this.view.buttons._hDown = 0;
-      this.view.buttons._xDown = this.view.directionalButtonsX;
-      this.view.buttons._yDown = this.view.directionalButtonsY + this.view.directionalButtonsH;
-    }
-
-    // left
-    else if((event.clientY < this.view.directionalButtonsY + this.view.directionalButtonsH && event.clientY > this.view.directionalButtonsY - (this.view.buttons._wy - 5)) && (event.clientX < this.view.directionalButtonsX - (this.view.buttons._wx - 5) - this.view.directionalButtonsH && event.clientX > this.view.directionalButtonsX - this.view.buttons._wx * 2)){
-      this.view.buttons._hLeft = 0;
-      this.view.buttons._xLeft = this.view.directionalButtonsX - this.view.directionalButtonsH;
-      this.view.buttons._yLeft = this.view.directionalButtonsY;
+    if (this.model.nbPlayers == 1) {
+      // joystick
+      if((event.clientX <= this.view._centerX + 50 && event.clientX >= this.view._centerX - 50) && (event.clientY <= this.view._centerY + 50 && event.clientY >= this.view._centerY - 50)) {
+        this._x = event.clientX;
+        this._y = event.clientY;
+        this.model._isMoving = true;
+      }
+  
+      // touches directionnelles
+      // up
+      if((event.clientX < this.view.directionalButtonsX + this.view.directionalButtonsH && event.clientX > this.view.directionalButtonsX - (this.view.buttons._wx - 5)) && (event.clientY < this.view.directionalButtonsY - (this.view.buttons._wy - 5) - this.view.directionalButtonsH && event.clientY > this.view.directionalButtonsY - this.view.buttons._wy * 2)) {
+        this.model._direction = 'N';
+        // this.arrowUpMovement(this.model.character1);
+        this.view.buttons._hUp = 0;
+        this.view.buttons._xUp = this.view.directionalButtonsX;
+        this.view.buttons._yUp = this.view.directionalButtonsY - this.view.directionalButtonsH;
+      }
+  
+      // right
+      else if((event.clientY < this.view.directionalButtonsY + this.view.directionalButtonsH && event.clientY > this.view.directionalButtonsY - (this.view.buttons._wy - 5)) && (event.clientX < this.view.directionalButtonsX + (this.view.buttons._wx + 5) + this.view.directionalButtonsH && event.clientX > this.view.directionalButtonsX + this.view.directionalButtonsH)){
+        this.arrowRightMovement(this.model.character1);
+        this.model.pressed = true;
+        this.view.buttons._hRight = 0;
+        this.view.buttons._xRight = this.view.directionalButtonsX + this.view.directionalButtonsH;
+        this.view.buttons._yRight = this.view.directionalButtonsY;
+      }
+  
+      // down
+      else if((event.clientX < this.view.directionalButtonsX + this.view.directionalButtonsH && event.clientX > this.view.directionalButtonsX - (this.view.buttons._wx - 5)) && (event.clientY < this.view.directionalButtonsY + (this.view.buttons._wy + 5) + this.view.directionalButtonsH && event.clientY > this.view.directionalButtonsY + this.view.directionalButtonsH)) {
+        this.view.buttons._hDown = 0;
+        this.view.buttons._xDown = this.view.directionalButtonsX;
+        this.view.buttons._yDown = this.view.directionalButtonsY + this.view.directionalButtonsH;
+      }
+  
+      // left
+      else if((event.clientY < this.view.directionalButtonsY + this.view.directionalButtonsH && event.clientY > this.view.directionalButtonsY - (this.view.buttons._wy - 5)) && (event.clientX < this.view.directionalButtonsX - (this.view.buttons._wx - 5) - this.view.directionalButtonsH && event.clientX > this.view.directionalButtonsX - this.view.buttons._wx * 2)){
+        this.view.buttons._hLeft = 0;
+        this.view.buttons._xLeft = this.view.directionalButtonsX - this.view.directionalButtonsH;
+        this.view.buttons._yLeft = this.view.directionalButtonsY;
+      }
     }
    }
 
    mouseupFunction(event) {
-    if (this.model.character1.move == "run") this.model.character1.stand();
-    this.model.countBeforeRunning1 = 0;
-    // joystick
-    this.view._x = this.view._centerX;
-    this.view._y = this.view._centerY;
-    this.model._isMoving = false;
-    this.model.pressed = false;
+    if(event.clientX >= this.model.backButtonX && event.clientX <= this.model.backButtonWx + this.model.backButtonX && event.clientY >= this.model.backButtonY && event.clientY <= this.model.backButtonWy + this.model.backButtonY) {
+      this.backToMainMenu();
+    } 
 
-    // touches directionnelles
-    // up
-    this.view.buttons._hUp = this.view.directionalButtonsH;
-    this.view.buttons._xUp = this.view.directionalButtonsX;
-    this.view.buttons._yUp = this.view.directionalButtonsY;
+    if(this.model.nbPlayers == 1) {
 
-    // right
-    this.view.buttons._hRight = this.view.directionalButtonsH;
-    this.view.buttons._xRight = this.view.directionalButtonsX;
-    this.view.buttons._yRight = this.view.directionalButtonsY;
+      if (this.model.character1.move == "run") this.model.character1.stand();
+      this.model.countBeforeRunning1 = 0;
+      // joystick
+      this.view._x = this.view._centerX;
+      this.view._y = this.view._centerY;
+      this.model._isMoving = false;
+      this.model.pressed = false;
 
-    // down
-    this.view.buttons._hDown = this.view.directionalButtonsH;
-    this.view.buttons._xDown = this.view.directionalButtonsX;
-    this.view.buttons._yDown = this.view.directionalButtonsY;    
+      // touches directionnelles
+      // up
+      this.view.buttons._hUp = this.view.directionalButtonsH;
+      this.view.buttons._xUp = this.view.directionalButtonsX;
+      this.view.buttons._yUp = this.view.directionalButtonsY;
 
-    // left
-    this.view.buttons._hLeft = this.view.directionalButtonsH;
-    this.view.buttons._xLeft = this.view.directionalButtonsX;
-    this.view.buttons._yLeft = this.view.directionalButtonsY;
+      // right
+      this.view.buttons._hRight = this.view.directionalButtonsH;
+      this.view.buttons._xRight = this.view.directionalButtonsX;
+      this.view.buttons._yRight = this.view.directionalButtonsY;
+
+      // down
+      this.view.buttons._hDown = this.view.directionalButtonsH;
+      this.view.buttons._xDown = this.view.directionalButtonsX;
+      this.view.buttons._yDown = this.view.directionalButtonsY;    
+
+      // left
+      this.view.buttons._hLeft = this.view.directionalButtonsH;
+      this.view.buttons._xLeft = this.view.directionalButtonsX;
+      this.view.buttons._yLeft = this.view.directionalButtonsY;
+    }
    }
 
   mousemoveFunction(event) {
+    if(event.clientX >= this.model.backButtonX && event.clientX <= this.model.backButtonWx + this.model.backButtonX && event.clientY >= this.model.backButtonY && event.clientY <= this.model.backButtonWy + this.model.backButtonY) {
+      this.model.backButtonColor = "#FFFFFF";
+      document.body.style.cursor = 'pointer';
+    } 
+    else {
+      this.model.backButtonColor = "#232323";
+      document.body.style.cursor = 'initial';
+    }
+
     if(this.model._isMoving) {
       if(event.clientX <= this.view._centerX + 50 && event.clientX >= this.view._centerX - 50)
         this.view._x = event.clientX;
@@ -504,8 +664,102 @@ export default class Controller {
   }
 
   arrowUpMovement(character) {
-    character.state = 0;
-    character.jump();
+    if (this.model.character1.move != "win" && this.model.character1.move != "lose") {
+      character.state = 0;
+      character.jump();
+    }
+  }
+
+  checkWinState(tilemap, canvas, character, savedBackground) {
+    if(document.body.clientWidth > 500){
+      if(character.posX > 60) {
+        tilemap[13 * canvas.width + 380] = savedBackground;
+        character.win();
+        if (this.model.nbPlayers == 2) { // L'autre adversaire ne pourra plus avancer
+          character == this.model.character2 ? this.model.character1.lose() : this.model.character2.lose()
+        }
+      }
+    } else {
+      if(character.posX > 15) {
+        tilemap[13 * canvas.width + 380] = savedBackground;
+        character.win();
+      } 
+    }
+  }
+
+  checkJumpState(character) {
+    if(character.move == "jump"){
+      character.jump();
+    }
+  }
+
+  checkCamera(character, camera) {
+    if(document.body.clientWidth > 500) {
+      if(character.posX > 30 && camera < 320){
+          camera += 1;
+          character.posX -= 1;
+      }
+    } else {
+      if(character.posX > 1 && camera < 365){
+        camera += 1;
+        character.posX -= 1;
+      }
+    }
+    return camera;
+  }
+
+  checkFallState(tilemap, canvas, character, camera, backgroundHeight) {
+    if(!this.model.map.spritesSupport.includes(tilemap[(character.posY + 2) * this.view.canvas.width + Math.round(character.posX + camera) + 1])) {
+      character.move = "fall";
+      character.fall();
+    }
+    // Retour case départ quand il tombe
+    if (character.posY > backgroundHeight){
+      character.posX = 0;
+      camera = 0;
+      character.posY = 12;
+      character.move = "stand";
+    }
+
+    if (character.move == "fall" && (character.posY > this.view.backgroundHeight || (this.model.map.spritesSupport.includes(tilemap[(character.posY + 2) * this.view.canvas.width + Math.round(character.posX + camera) + 1])))){
+      character.move = "stand";
+    }
+    return camera;
+  }
+
+  playMovements() {
+    if(this.model._isMoving) {
+      switch(this.model._direction) {
+        case 'N':
+          this.arrowUpMovement(this.model.character1);
+          break;
+        case 'E':
+          this.arrowRightMovement(this.model.character1);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  manageWalkAndRun(){
+    if (this.model.pressed){
+      if(this.model.countBeforeRunning1 > 10)
+        this.arrowRightMovement(this.model.character1);
+      this.model.countBeforeRunning1++;
+    }
+    else if(this.model.countBeforeRunning1 > 3)
+      this.arrowRightMovement(this.model.character1)
+    if(this.model.countBeforeRunning2 > 3)
+      this.arrowRightMovement(this.model.character2)
+  }
+
+  checking(tilemap, canvas, character, camera, savedBackground, backgroundHeight) {
+    this.checkWinState(tilemap, canvas, character, savedBackground);
+    this.checkJumpState(character);
+    camera = this.checkCamera(character, camera); // Pour faire avancer la caméra de la map
+    camera = this.checkFallState(tilemap, canvas, character, camera, backgroundHeight); // Si le personnage se trouve sur un sprite empêchant de tomber
+    return camera;
   }
 
   /**
@@ -528,164 +782,11 @@ export default class Controller {
    */
    loop(stamp) {
     this.loopPointer = window.requestAnimationFrame(stamp => this.loop(stamp));
-    if (this.model.pressed){
-      if(this.model.countBeforeRunning1 > 10)
-        this.arrowRightMovement(this.model.character1);
-      this.model.countBeforeRunning1++;
-    }
-    else if(this.model.countBeforeRunning1 > 3)
-      this.arrowRightMovement(this.model.character1)
-    if(this.model.countBeforeRunning2 > 3)
-      this.arrowRightMovement(this.model.character2)
-
+    this.manageWalkAndRun();
     this.view.draw(this.model);
-
     this.view.camera1 = this.checking(this.model.map.tilemap, this.view.canvas, this.model.character1, this.view.camera1, this.model.map.savedBackground1, this.view.backgroundHeight);
     if(this.model.nbPlayers == 2)
       this.view.camera2 = this.checking(this.model.map.tilemap2, this.view.canvas2, this.model.character2, this.view.camera2, this.model.map.savedBackground2, this.view.backgroundHeight2);
-    // this.checking1(this.model.map.tilemap, this.view.canvas);
-    // this.checking2(this.model.map.tilemap2, this.view.canvas2);
-
-    if(this.model._isMoving) {
-      switch(this.model._direction) {
-        case 'N':
-          this.arrowUpMovement(this.model.character1);
-          break;
-        case 'E':
-          this.arrowRightMovement(this.model.character1);
-          break;
-        default:
-          break;
-      }
-    }
-   }
-
-  // TODO : séparer cette fonction en plusieurs étapes (sous-fonction) et régler le problème pour utiliser la même pour les deux joueurs
-  checking(tilemap, canvas, character, camera, savedBackground, backgroundHeight) {
-    if(document.body.clientWidth > 500){
-      if(character.posX > 60) {
-        tilemap[13 * canvas.width + 380] = savedBackground;
-        character.win();
-        if (this.model.nbPlayers == 2) { // L'autre adversaire ne pourra plus avancer
-          character == this.model.character2 ? this.model.character1.lose() : this.model.character2.lose()
-        }
-      }
-    } else {
-      if(character.posX > 15) {
-        tilemap[13 * canvas.width + 380] = savedBackground;
-        character.win();
-      } 
-    }
-    if(character.move == "jump"){
-      character.jump();
-    }
-    // Pour faire avancer la caméra de la map
-    if(document.body.clientWidth > 500) {
-      if(character.posX > 30 && camera < 320){
-          camera += 1;
-          character.posX -= 1;
-      }
-    } else {
-      if(character.posX > 1 && camera < 365){
-        camera += 1;
-        character.posX -= 0.5;
-      }
-    }
-
-    // Si le personnage se trouve sur un sprite empêchant de tomber
-    if(!this.model.map.spritesSupport.includes(tilemap[(character.posY + 2) * this.view.canvas.width + Math.round(character.posX + camera) + 1])) {
-      character.move = "fall";
-      character.fall();
-    }
-    // Retour case départ quand il tombe
-    if (character.posY > backgroundHeight){
-      character.posX = 0;
-      camera = 0;
-      character.posY = 12;
-      character.move = "stand";
-    }
-
-    if (character.move == "fall" && (character.posY > this.view.backgroundHeight || (this.model.map.spritesSupport.includes(tilemap[(character.posY + 2) * this.view.canvas.width + Math.round(character.posX + camera) + 1])))){
-      character.move = "stand";
-    }
-    return camera;
+    this.playMovements();
   }
-
-  /* checking1(tilemap, canvas) {
-    if(this.model.character1.posX > 45) {
-      tilemap[13 * canvas.width + 380] = this.model.map.savedBackground1;
-      this.model.character1.win();
-    }
-    if(this.model.character1.move == "jump"){
-      this.model.character1.jump();
-    }
-    // Pour faire avancer la caméra de la map
-    if(document.body.clientWidth > 500) {
-      if(this.model.character1.posX > 20 && this.view.camera1 < 335){
-          this.view.camera1 += 1;
-          this.model.character1.posX -= 0.5;
-      }
-    } else {
-      if(this.model.character1.posX > 1 && this.view.camera1 < 335){
-        this.view.camera1 += 1;
-        this.model.character1.posX -= 0.5;
-      }
-    }
-
-    // Si le personnage se trouve sur un sprite empêchant de tomber
-    if(!this.model.map.spritesSupport.includes(this.model.map.tilemap[(this.model.character1.posY + 2) * this.view.canvas.width + Math.round(this.model.character1.posX + this.view.camera1) + 1])) {
-      this.model.character1.move = "fall";
-      this.model.character1.fall();
-    }
-    // Retour case départ quand il tombe
-    if (this.model.character1.posY > this.model.map.mapHeight){
-      this.model.character1.posX = 0;
-      this.view.camera1 = 0;
-      this.model.character1.posY = 12;
-      this.model.character1.move = "stand";
-    }
-
-    if (this.model.character1.move == "fall" && (this.model.character1.posY > this.model.map.mapHeight || (this.model.map.spritesSupport.includes(this.model.map.tilemap[(this.model.character1.posY + 2) * this.view.canvas.width + Math.round(this.model.character1.posX + this.view.camera1) + 1])))){
-      this.model.character1.move = "stand";
-    }
-   }
-
-   checking2(tilemap, canvas) {
-    if(this.model.character2.posX > 45) {
-      tilemap[13 * canvas.width + 380] = this.model.map.savedBackground2;
-      this.model.character2.win();
-    }
-
-    if(this.model.character2.move == "jump"){
-      this.model.character2.jump();
-    }
-    // Pour faire avancer la caméra de la map
-    if(document.body.clientWidth > 500) {
-      if(this.model.character2.posX > 20 && this.view.camera2 < 335){
-          this.view.camera2 += 1;
-          this.model.character2.posX -= 0.5;
-      }
-    } else {
-      if(this.model.character2.posX > 1 && this.view.camera2 < 335){
-        this.view.camera2 += 1;
-        this.model.character2.posX -= 0.5;
-      }
-    }
-    // Si le personnage se trouve sur un sprite empêchant de tomber
-    if(!this.model.map.spritesSupport.includes(this.model.map.tilemap2[(this.model.character2.posY + 2) * this.view.canvas.width + Math.round(this.model.character2.posX + this.view.camera2) + 1])) {
-      this.model.character2.move = "fall";
-      this.model.character2.fall();
-    }
-    // Retour case départ quand il tombe
-    if (this.model.character2.posY > this.model.map.mapHeight){
-      this.model.character2.posX = 0;
-      this.view.camera2 = 0;
-      this.model.character2.posY = 12;
-      this.model.character2.move = "stand";
-    }
-
-    if (this.model.character2.move == "fall" && (this.model.character2.posY > this.model.map.mapHeight || (this.model.map.spritesSupport.includes(this.model.map.tilemap2[(this.model.character2.posY + 2) * this.view.canvas.width + Math.round(this.model.character2.posX + this.view.camera2) + 1])))){
-      this.model.character2.move = "stand";
-    }
-  }*/
 }

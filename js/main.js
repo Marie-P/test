@@ -11,17 +11,16 @@ class Main {
     window.addEventListener("keydown", event => this.controller.keydownFunction(event));
     window.addEventListener("keyup", event => this.controller.keyupFunction(event));
 
-    if(this.controller.model.nbPlayers == 1) {
+    window.addEventListener("mousemove", event => this.controller.mousemoveFunction(event));
+    window.addEventListener("mouseup", event => this.controller.mouseupFunction(event));
+
       window.addEventListener("mousedown", event => this.controller.mousedownFunction(event));
-      window.addEventListener("mousemove", event => this.controller.mousemoveFunction(event));
-      window.addEventListener("mouseup", event => this.controller.mouseupFunction(event));
 
       window.addEventListener("touchstart", event => this.controller.touchstartFunction(event));
       window.addEventListener("touchmove", event => this.controller.touchmoveFunction(event));
       window.addEventListener("touchend", event => this.controller.touchendFunction(event));
-    }
 
-    // this.controller.mainMenu();
-    this.controller.load(); 
+    this.controller.mainMenu();
+    // this.controller.load(); 
   }
 }

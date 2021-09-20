@@ -2,9 +2,9 @@ import Map from "./utils/map.js";
 
 export default class Model {
   constructor() {
-    this.nbPlayers = 1;
+    this.nbPlayers = 2;
     this.map = new Map();
-    this.choosenFirstCharacter = "naruto";
+    this.choosenFirstCharacter = "pikachu";
     this.choosenSecondCharacter = "luffy";
     this.character1;
     this.character2;
@@ -18,6 +18,9 @@ export default class Model {
 
     // tableau qui va nous permettre d'identifier les touches entrées par les deux users
     this.keysArray = [];
+
+    this.backButtonColor = "#232323";
+    this.backButtonX = 10; this.backButtonY = 5; this.backButtonWx = 55; this.backButtonWy = 40;
   }
 
   /**

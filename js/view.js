@@ -5,10 +5,11 @@ export default class View {
   constructor(nbPlayer) {
     this.canvas = document.createElement("canvas");
     this.context = this.canvas.getContext("2d");
-    document.body.clientWidth > 500 ? this.canvas.width = window.innerWidth : this.canvas.width = 500;
-    nbPlayer == 1 ? this.canvas.height = window.innerHeight : this.canvas.height = 300;
-    document.body.clientWidth > 500 ? this.backgroundWidth = window.innerWidth : this.backgroundWidth = 500;
-    nbPlayer == 1 ? this.backgroundHeight = window.innerHeight/15 : this.backgroundHeight = 17;
+
+    // document.body.clientWidth > 500 ? this.canvas.width = window.innerWidth : this.canvas.width = 500;
+    // nbPlayer == 1 ? this.canvas.height = window.innerHeight : this.canvas.height = 250;
+    // document.body.clientWidth > 500 ? this.backgroundWidth = window.innerWidth : this.backgroundWidth = 500;
+    // nbPlayer == 1 ? this.backgroundHeight = window.innerHeight/15 : this.backgroundHeight = 17;
     this.camera1 = 0;
 
     // Deuxième perso
@@ -21,6 +22,10 @@ export default class View {
       this.backgroundHeight2 = 17;
       this.camera2 = 0;
     }
+
+    // bouton de retour au menu principal
+    this.backButton_x = 0;
+    this.backButton_y = 0;
 
     // position du joystick
 
@@ -39,6 +44,13 @@ export default class View {
     this.directionalButtonsY = 370;
     this.directionalButtonsH = 10;
     this.buttons = new GameButtons(this.canvas, this.context, this.directionalButtonsX, this.directionalButtonsY, this.directionalButtonsH, "#000000");
+  }
+
+  setView(nbPlayer) {
+    document.body.clientWidth > 500 ? this.canvas.width = window.innerWidth : this.canvas.width = 500;
+    nbPlayer == 1 ? this.canvas.height = window.innerHeight : this.canvas.height = 250;
+    document.body.clientWidth > 500 ? this.backgroundWidth = window.innerWidth : this.backgroundWidth = 500;
+    nbPlayer == 1 ? this.backgroundHeight = window.innerHeight/15 : this.backgroundHeight = 17;
   }
 
   /**
@@ -102,5 +114,38 @@ export default class View {
       this.drawMap(model, this.canvas2, this.context2, model.map.tilemap2, this.camera2);
       this.drawCharacter(this.context2, model, model.character2);
     }
+    // bouton de retour au menu principal
+    
+    // this.context.beginPath();
+    // this.context.moveTo(this.backButton_x, this.backButton_y);
+    // this.context.lineTo(this.backButton_x + 10, this.backButton_y - 10); // x, y
+    // this.context.lineTo(this.backButton_x, this.backButton_y - 10);
+    // this.context.fillStyle = "#CACFD2";
+    // this.context.strokeStyle = "#CACFD2";
+    // this.context.fill();
+
+
+    // let x = 20, y = 10, wx = 30, wy = 30;
+    // this.context.fillRect(x - 10 , y - 5, wx + 25, wy + 10);
+
+    // Flèche pour retour au menu
+    // let x = 20, y = 10, wx = 30, wy = 30;
+    let x = 10, y = 5, wx = 55, wy = 40;
+
+    // let buttonColor = "#000000"; ////////////
+
+    
+    // this.testFunctionColor(x, y, wx, wy);
+    // console.log(buttonColor)
+    this.context.beginPath();
+    this.context.fillStyle = model.backButtonColor;
+    this.context.fillRect(x, y, wx, wy);
+    x = x + 10; y = y + 5; wx = wx - 25; wy = wy - 10;
+    this.context.moveTo(x, y + wy/2);
+    this.context.lineTo(x + wx, y + wy);
+    this.context.lineTo(x + wx, y);
+    this.context.fillStyle = "#A9A9A9";
+    this.context.strokeStyle = "#A9A9A9";
+    this.context.fill();
   }
 }
