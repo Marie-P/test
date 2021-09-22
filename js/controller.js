@@ -21,7 +21,7 @@ export default class Controller {
    mainMenu() {
     let container = document.createElement("div"), welcomeText = document.createElement("p");
     container.className = "mainMenu";
-    welcomeText.innerHTML = "Bienvenue sur Tresor Raid !<br><br>Choisissez une option : ";
+    welcomeText.innerHTML = "<br><br>Bienvenue sur Tresor Raid !<br><br>Choisissez une option : ";
     container.appendChild(welcomeText);  
     let sectionNames = ["1 Joueur", "2 Joueurs"], urls = ["", ""], sectionFunctions = [this.onePlayer, this.twoPlayers];
     for (let i = 0; i < 2; i++) {
