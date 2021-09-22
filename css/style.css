@@ -1,6 +1,6 @@
-body {
+/* body {
   position: relative;
-  overflow: auto;
+  overflow: hidden;
   margin: 0px;
   padding: 0px;
   background: #333;
@@ -48,4 +48,4 @@ button:focus{
   top: 25%;
   left: 25%;
   transform: translate(-50%, -50%);
-}
+} */
